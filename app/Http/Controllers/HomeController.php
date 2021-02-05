@@ -25,8 +25,8 @@ class HomeController extends Controller
      */
     public function index(Post $post)
     {
-        //$posts = auth()->user()->posts;  // this is relationship one to many method
-        $posts = Post::where(['user_id' => auth()->id()])->get(); // this is manual method
+        $posts = auth()->user()->posts;  // this is relationship one to many method
+        // $posts = Post::where(['user_id' => auth()->id()])->get(); // this is manual method
 
         return view('home', compact('posts'));
     }
