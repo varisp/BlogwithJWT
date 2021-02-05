@@ -25,8 +25,15 @@ Route::group([
 ], function ($router) {
 
     Route::post('login', 'AuthController@login');
+    Route::post('register', 'AuthController@register');
     Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');
     Route::post('me', 'AuthController@me');
+    Route::post('getposts', 'APIController@getposts');
+    Route::post('postposts', 'APIController@postposts');
+    Route::post('edit','APIController@edit');
+    Route::post('delete', 'APIController@delete');
 
 });
+
+

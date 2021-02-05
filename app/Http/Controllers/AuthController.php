@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Post;
+use App\User;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('auth:api', ['except' => ['login','register']]);
     }
 
     /**
@@ -22,11 +25,24 @@ class AuthController extends Controller
     {
         $credentials = request(['email', 'password']);
 
-        if (! $token = auth()->guard('api')->attempt($credentials)) {
+        if (! $token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
         return $this->respondWithToken($token);
+    }
+    public function register(Request $request){
+        $request->validate([
+            'email' => 'required|unique:users',
+            'password' => 'required',
+            'name' => 'required',
+            'cpassword'=>'required|same:password'
+        ]);
+        $data = $request->all();
+        $data['password'] = Hash::make($request->password);
+        User::create($data);
+        return response()->json(['User created Successfully']);
+
     }
 
     /**
@@ -46,7 +62,7 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        auth()->guard('api')->logout();
+        auth()->logout();
 
         return response()->json(['message' => 'Successfully logged out']);
     }
@@ -73,7 +89,7 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60
+            'expires_in' => auth()->factory()->getTTL() * 60
         ]);
     }
 }
